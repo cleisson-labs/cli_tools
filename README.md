@@ -3,6 +3,7 @@
 [![CI](https://github.com/cleisson-labs/cli_tools/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/cleisson-labs/cli_tools/actions/workflows/tests.yml)
 [![License](https://img.shields.io/github/license/cleisson-labs/cli_tools)](LICENSE)
 [![Coverage report](https://img.shields.io/badge/coverage-C%20report-blue)](https://github.com/cleisson-labs/cli_tools/actions/workflows/tests.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/cleisson-labs/cli_tools/badge)](https://scorecard.dev/viewer/?uri=github.com/cleisson-labs/cli_tools)
 
 A multi-language set of focused command-line tools for everyday workflows.
 
