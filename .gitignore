@@ -1,1 +1,5 @@
 ai_tasks/
+# Native test and coverage artifacts
+*.dSYM/
+*.gcno
+*.gcda

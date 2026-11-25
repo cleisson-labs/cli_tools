@@ -14,8 +14,10 @@ get_today_date (char *output, size_t output_size)
   struct tm local_time;
 
   assert (now != (time_t)-1);
-  assert (localtime_r (&now, &local_time) != NULL);
-  assert (strftime (output, output_size, "%Y-%m-%d", &local_time) != 0);
+  struct tm *result = localtime_r (&now, &local_time);
+  assert (result != NULL);
+  size_t length = strftime (output, output_size, "%Y-%m-%d", &local_time);
+  assert (length != 0);
 }
 
 static void
@@ -28,7 +30,8 @@ create_temp_usage_file_path (char *output, size_t output_size)
   fd = mkstemp (output);
   assert (fd != -1);
   close (fd);
-  assert (remove (output) == 0);
+  int cleanup_result = remove (output);
+  assert (cleanup_result == 0);
 }
 
 static void
@@ -36,7 +39,8 @@ write_usage_file (const char *path, const char *date, int request_count)
 {
   FILE *file = fopen (path, "w");
   assert (file != NULL);
-  assert (fprintf (file, "%s %d\n", date, request_count) > 0);
+  int written = fprintf (file, "%s %d\n", date, request_count);
+  assert (written > 0);
   fclose (file);
 }
 
@@ -47,7 +51,8 @@ read_usage_count (const char *path, char *date_output, size_t date_output_size)
   int request_count = -1;
 
   assert (file != NULL);
-  assert (fscanf (file, "%15s %d", date_output, &request_count) == 2);
+  int fields = fscanf (file, "%15s %d", date_output, &request_count);
+  assert (fields == 2);
   fclose (file);
 
   (void)date_output_size;
@@ -73,7 +78,8 @@ test_first_request_creates_usage_file (void)
   assert (request_count == 1);
 
   assert (unsetenv ("WORKPAY_USAGE_FILE") == 0);
-  assert (remove (path) == 0);
+  int cleanup_result = remove (path);
+  assert (cleanup_result == 0);
 }
 
 static void
@@ -96,7 +102,8 @@ test_request_99_advances_to_100 (void)
   assert (request_count == 100);
 
   assert (unsetenv ("WORKPAY_USAGE_FILE") == 0);
-  assert (remove (path) == 0);
+  int cleanup_result = remove (path);
+  assert (cleanup_result == 0);
 }
 
 static void
@@ -119,7 +126,8 @@ test_limit_reached_at_100 (void)
   assert (request_count == 100);
 
   assert (unsetenv ("WORKPAY_USAGE_FILE") == 0);
-  assert (remove (path) == 0);
+  int cleanup_result = remove (path);
+  assert (cleanup_result == 0);
 }
 
 int
