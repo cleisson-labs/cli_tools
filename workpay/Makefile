@@ -32,3 +32,5 @@ test:
 
 clean:
 	@rm -f workpay test_parse test_money test_cli test_quota test_report_store test_report_query test_report_export
+
+include ../.scripts/c-checks.mk

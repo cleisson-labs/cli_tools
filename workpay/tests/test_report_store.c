@@ -15,7 +15,8 @@ create_temp_entries_path (char *output_path, size_t output_size)
   fd = mkstemp (output_path);
   assert (fd != -1);
   close (fd);
-  assert (remove (output_path) == 0);
+  int cleanup_result = remove (output_path);
+  assert (cleanup_result == 0);
 }
 
 static void
@@ -55,7 +56,8 @@ test_append_and_load_roundtrip (void)
 
   file = fopen (path, "r");
   assert (file != NULL);
-  assert (fgets (header_line, sizeof (header_line), file) != NULL);
+  char *header = fgets (header_line, sizeof (header_line), file);
+  assert (header != NULL);
   fclose (file);
   assert (strstr (header_line, REPORT_CSV_HEADER) == header_line);
 
@@ -70,7 +72,8 @@ test_append_and_load_roundtrip (void)
 
   report_entry_list_free (&loaded);
   assert (unsetenv ("WORKPAY_ENTRIES_FILE") == 0);
-  assert (remove (path) == 0);
+  int cleanup_result = remove (path);
+  assert (cleanup_result == 0);
 }
 
 static void
@@ -104,7 +107,8 @@ test_invalid_header_returns_parse_error (void)
 
   file = fopen (path, "w");
   assert (file != NULL);
-  assert (fprintf (file, "bad,header\n") > 0);
+  int written = fprintf (file, "bad,header\n");
+  assert (written > 0);
   fclose (file);
 
   assert (report_store_load_entries (&loaded, error, sizeof (error))
@@ -112,7 +116,8 @@ test_invalid_header_returns_parse_error (void)
   assert (strstr (error, "Invalid entries CSV header") != NULL);
 
   assert (unsetenv ("WORKPAY_ENTRIES_FILE") == 0);
-  assert (remove (path) == 0);
+  int cleanup_result = remove (path);
+  assert (cleanup_result == 0);
 }
 
 int

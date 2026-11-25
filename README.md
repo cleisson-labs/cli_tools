@@ -1,5 +1,9 @@
 # CLI Tools Collection
 
+[![CI](https://github.com/cleisson-labs/cli_tools/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/cleisson-labs/cli_tools/actions/workflows/tests.yml)
+[![License](https://img.shields.io/github/license/cleisson-labs/cli_tools)](LICENSE)
+[![Coverage report](https://img.shields.io/badge/coverage-C%20report-blue)](https://github.com/cleisson-labs/cli_tools/actions/workflows/tests.yml)
+
 A multi-language set of focused command-line tools for everyday workflows.
 
 ## Tools
@@ -10,7 +14,7 @@ A multi-language set of focused command-line tools for everyday workflows.
 | `imgcrop` | Rust | Crops images to exact dimensions with optional proportion/framing controls. | `cd imgcrop && make build` | `cd imgcrop && make test` |
 | `pypaste` | Rust | Compacts Python scripts for terminal pasting and copies output to clipboard. | `cd pypaste && make build` | `cd pypaste && make test` |
 | `raw_http` | C (libcurl) | Sends raw HTTP requests from `.txt` files and prints/saves full responses. | `cd raw_http && make build` | `cd raw_http && make test` |
-| `workpay` | C (libcurl) | Calculates earnings from worked time and converts currencies via AwesomeAPI. | `cd workpay && make build` | `N/A` (no `test` target in `Makefile`) |
+| `workpay` | C (libcurl) | Calculates earnings from worked time and converts currencies via AwesomeAPI. | `cd workpay && make build` | `cd workpay && make test` |
 
 Detailed per-tool docs:
 - [imgconvert/README.md](imgconvert/README.md)
@@ -44,6 +48,13 @@ Use the repository scripts from the repository root:
 ./.scripts/build_all.sh
 ./.scripts/test_all.sh
 ```
+
+CI runs the same lint, build and test scripts on Linux and checks changed C
+lines with clang-format's GNU style. For either C tool,
+`make -C raw_http analyze` runs Cppcheck, `make -C raw_http sanitize CC=clang`
+runs the tests with AddressSanitizer and UndefinedBehaviorSanitizer, and
+`make -C raw_http coverage CC=gcc` prints a gcovr report. Replace `raw_http`
+with `workpay` to check that tool. Coverage requires GCC and gcovr.
 
 Install built binaries from a local clone:
 

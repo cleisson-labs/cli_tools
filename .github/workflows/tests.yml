@@ -1,32 +1,91 @@
-name: Run All Tests
+name: CI
 
 on:
-  push:
   pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  test:
+  security:
+    uses: cleisson-labs/.github/.github/workflows/security.yml@03f53ed9e71b2741c683c448a538f7a7b8aa1786 # v1.0.0
+
+  docs:
+    uses: cleisson-labs/.github/.github/workflows/docs.yml@03f53ed9e71b2741c683c448a538f7a7b8aa1786 # v1.0.0
+
+  all-tools:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 25
+    env:
+      RUSTUP_TOOLCHAIN: stable
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          components: rustfmt, clippy
-
-      - name: Install C dependencies
+          persist-credentials: false
+      - name: Set up Rust
+        run: rustup toolchain install stable --profile minimal --component rustfmt --component clippy
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          workspaces: |
+            imgconvert
+            imgcrop
+            pypaste
+          save-if: ${{ github.event_name == 'push' }}
+          cache-bin: false
+      - name: Install build and shell lint dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev shellcheck
-
+          sudo apt-get install -y --no-install-recommends libcurl4-openssl-dev shellcheck
+      - name: Verify committed dependency locks
+        run: |
+          for manifest in */Cargo.toml; do
+            cargo metadata --locked --format-version=1 --manifest-path "$manifest" > /dev/null
+          done
       - name: Run all lint checks
         run: ./.scripts/lint_all.sh
-
       - name: Build all tools
         run: ./.scripts/build_all.sh
-
       - name: Run all tests
         run: ./.scripts/test_all.sh
+
+  c:
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [raw_http, workpay]
+    uses: cleisson-labs/.github/.github/workflows/c.yml@03f53ed9e71b2741c683c448a538f7a7b8aa1786 # v1.0.0
+    with:
+      working-directory: ${{ matrix.project }}
+      apt-packages: libcurl4-openssl-dev
+      coverage: true
+      sanitizers: true
+
+  codeql:
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [actions, rust, c-cpp]
+    permissions:
+      contents: read
+      security-events: write
+    uses: cleisson-labs/.github/.github/workflows/codeql.yml@03f53ed9e71b2741c683c448a538f7a7b8aa1786 # v1.0.0
+    with:
+      language: ${{ matrix.language }}
+
+  ci-ok:
+    if: always()
+    needs: [security, docs, codeql, all-tools, c]
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    permissions: {}
+    steps:
+      - name: Require every CI job to pass
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: jq -e 'length > 0 and all(.[]; .result == "success")' <<< "$RESULTS"

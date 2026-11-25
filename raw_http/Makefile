@@ -17,3 +17,5 @@ test:
 
 clean:
 	@rm -f raw_http test_parse test_cli_output
+
+include ../.scripts/c-checks.mk

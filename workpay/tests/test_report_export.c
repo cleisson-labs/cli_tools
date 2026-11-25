@@ -69,7 +69,8 @@ test_csv_export_writes_expected_header_and_rows (void)
   assert (strstr (content, "alpha") != NULL);
   assert (strstr (content, "beta") != NULL);
 
-  assert (remove (output_path) == 0);
+  int cleanup_result = remove (output_path);
+  assert (cleanup_result == 0);
 }
 
 static void
@@ -91,7 +92,8 @@ test_json_export_writes_expected_fields (void)
   assert (strstr (content, "\"from_currency\": \"USD\"") != NULL);
   assert (strstr (content, "alpha \\\"quoted\\\"") != NULL);
 
-  assert (remove (output_path) == 0);
+  int cleanup_result = remove (output_path);
+  assert (cleanup_result == 0);
 }
 
 static void
