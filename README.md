@@ -56,14 +56,14 @@ Install built binaries from a local clone:
 Use the installer script directly from GitHub:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/cleissonom/cli_tools/main/install-macos.sh | \
+curl -fsSL https://raw.githubusercontent.com/cleisson-labs/cli_tools/main/install-macos.sh | \
   bash -s -- -y
 ```
 
 Install only selected tools into a user-local bin directory:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/cleissonom/cli_tools/main/install-macos.sh | \
+curl -fsSL https://raw.githubusercontent.com/cleisson-labs/cli_tools/main/install-macos.sh | \
   bash -s -- -y --tools imgcrop,pypaste
 ```
 

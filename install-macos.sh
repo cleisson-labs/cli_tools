@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-REPO="cleissonom/cli_tools"
+REPO="cleisson-labs/cli_tools"
 REF="main"
 PREFIX="/usr/local/bin"
 TOOLS_CSV="all"
@@ -18,7 +18,7 @@ Usage:
   install-macos.sh [options]
 
 Options:
-  --repo <owner/repo>      GitHub repository (default: cleissonom/cli_tools)
+  --repo <owner/repo>      GitHub repository (default: cleisson-labs/cli_tools)
   --ref <git-ref>          Branch/tag/commit for tarball download (default: main)
   --tools <csv|all>        Comma-separated tools or 'all' (default: all)
   --prefix <dir>           Installation directory (default: /usr/local/bin)
@@ -28,7 +28,7 @@ Options:
 Examples:
   install-macos.sh
   install-macos.sh --tools imgcrop,pypaste --prefix "$HOME/.local/bin"
-  install-macos.sh --repo cleissonom/cli_tools --ref main -y
+  install-macos.sh --repo cleisson-labs/cli_tools --ref main -y
 USAGE
 }
 
